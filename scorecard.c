@@ -1,138 +1,199 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #define MAX_CANDIDATES 6
 #define MAX_NAME_LENGTH 50
 
 typedef struct {
     char name[MAX_NAME_LENGTH];
-    int id; // °íÀ¯ ID
+    int id; // 6ìë¦¬ ê³ ìœ  ID
+    int scores[5]; // ìŒì•… ì†Œì–‘, ëŒ„ìŠ¤, ë³´ì»¬, ë¹„ì£¼ì–¼, ì „ë‹¬ë ¥ ì ìˆ˜
+    int totalScore; // ì´ì 
 } Candidate;
 
-void input_scores(Candidate candidates[], int scores[MAX_CANDIDATES][7], int judge_index) {
+// í›„ë³´ì ë°°ì—´ ì´ˆê¸°í™”
+Candidate candidates[MAX_CANDIDATES] = {
+    {"ë°•ì§€ì—°", 123456},
+    {"Ethan Smith", 234567},
+    {"Helena Silva", 345678},
+    {"Liam Wilson", 456789},
+    {"Olivia Brown", 567890},
+    {"Noah Johnson", 678901}
+};
+
+void inputScores(const char *judgeName, const char *specialization) {
     for (int i = 0; i < MAX_CANDIDATES; i++) {
-        printf("ÈÄº¸ÀÚ: %s\n", candidates[i].name);
-        int score;
-
-        // À½¾Ç ¼Ò¾ç Á¡¼ö ÀÔ·Â
-        do {
-            printf("À½¾Ç ¼Ò¾ç Á¡¼ö (10~100): ");
-            scanf("%d", &score);
-        } while (score < 10 || score > 100);
-        scores[i][judge_index] = score;
-
-        // ¿©±â¼­ ´Ù¸¥ ºĞ¾ß Á¡¼öµµ ÀÔ·Â¹ŞÀ» ¼ö ÀÖÀ½
-    }
-}
-
-void calculate_totals(int scores[MAX_CANDIDATES][7]) {
-    for (int i = 0; i < MAX_CANDIDATES; i++) {
-        int total = 0;
-        for (int j = 0; j < 5; j++) { // 5°³ÀÇ Á¡¼ö ÇÕ»ê
-            total += scores[i][j];
+        printf("í›„ë³´ì: %s\n", candidates[i].name);
+        for (int j = 0; j < 5; j++) {
+            int score;
+            do {
+                switch (j) {
+                    case 0:
+                        printf("%s ì†Œì–‘ ì ìˆ˜ (10~100): ", specialization); // ìŒì•… ì†Œì–‘ ì ìˆ˜
+                        break;
+                    case 1:
+                        printf("ëŒ„ìŠ¤ ì ìˆ˜ (10~100): ");
+                        break;
+                    case 2:
+                        printf("ë³´ì»¬ ì ìˆ˜ (10~100): ");
+                        break;
+                    case 3:
+                        printf("ë¹„ì£¼ì–¼ ì ìˆ˜ (10~100): ");
+                        break;
+                    case 4:
+                        printf("ì „ë‹¬ë ¥ ì ìˆ˜ (10~100): ");
+                        break;
+                }
+                scanf("%d", &score);
+                if (score < 10 || score > 100) {
+                    printf("ì˜ëª»ëœ ì ìˆ˜ì…ë‹ˆë‹¤. 10ì—ì„œ 100 ì‚¬ì´ì˜ ì ìˆ˜ë¥¼ ì…ë ¥í•˜ì„¸ìš”.\n");
+                }
+            } while (score < 10 || score > 100);
+            candidates[i].scores[j] = score; // ê° ì ìˆ˜ ì…ë ¥
         }
-        scores[i][6] = total; // ÃÑÁ¡ ÀúÀå
     }
 }
 
-void display_results(Candidate candidates[], int scores[MAX_CANDIDATES][7]) {
-    printf("ÀÔ·ÂÀ» ¸ğµÎ ¿Ï·áÇß½À´Ï´Ù.\n");
-    printf("ÀÔ·ÂÇÏ½Å ³»¿ëÀ» °ËÅäÇÏ¼¼¿ä!\n");
+void printScores() {
+    printf("\nì…ë ¥ì„ ëª¨ë‘ ì™„ë£Œí–ˆìŠµë‹ˆë‹¤.\n");
+    printf("ì…ë ¥í•˜ì‹  ë‚´ìš©ì„ ê²€í† í•˜ì„¸ìš”!\n");
     printf("------------------------------------\n");
     for (int i = 0; i < MAX_CANDIDATES; i++) {
-        printf("%s: %d\n", candidates[i].name, scores[i][6]);
+        printf("%s: ", candidates[i].name);
+        for (int j = 0; j < 5; j++) {
+            printf("%d ", candidates[i].scores[j]);
+        }
+        printf("ì´ì : %d\n", candidates[i].totalScore);
+    }
+}
+
+char confirmSubmission() {
+    char confirm;
+    printf("ì œì¶œí•˜ì‹œê² ìŠµë‹ˆê¹Œ? (Y/N): ");
+    scanf(" %c", &confirm);
+    return confirm;
+}
+
+void modifyScore() {
+    int id, newScores[5];
+    printf("ìˆ˜ì •í•  í›„ë³´ìì˜ ê³ ìœ  ID ì…ë ¥: ");
+    scanf("%d", &id);
+    
+    for (int i = 0; i < MAX_CANDIDATES; i++) {
+        if (candidates[i].id == id) {
+            printf("í˜„ì¬ ì ìˆ˜: ");
+            for (int j = 0; j < 5; j++) {
+                printf("%d ", candidates[i].scores[j]);
+            }
+            printf("\nìƒˆ ì ìˆ˜ë¥¼ ì…ë ¥í•˜ì„¸ìš” (10~100): \n");
+            for (int j = 0; j < 5; j++) {
+                do {
+                    switch (j) {
+                        case 0:
+                            printf("ì†Œì–‘ ì ìˆ˜: ");
+                            break;
+                        case 1:
+                            printf("ëŒ„ìŠ¤ ì ìˆ˜: ");
+                            break;
+                        case 2:
+                            printf("ë³´ì»¬ ì ìˆ˜: ");
+                            break;
+                        case 3:
+                            printf("ë¹„ì£¼ì–¼ ì ìˆ˜: ");
+                            break;
+                        case 4:
+                            printf("ì „ë‹¬ë ¥ ì ìˆ˜: ");
+                            break;
+                    }
+                    scanf("%d", &newScores[j]);
+                    if (newScores[j] < 10 || newScores[j] > 100) {
+                        printf("ì˜ëª»ëœ ì ìˆ˜ì…ë‹ˆë‹¤. 10ì—ì„œ 100 ì‚¬ì´ì˜ ì ìˆ˜ë¥¼ ì…ë ¥í•˜ì„¸ìš”.\n");
+                    }
+                } while (newScores[j] < 10 || newScores[j] > 100);
+            }
+            for (int j = 0; j < 5; j++) {
+                candidates[i].scores[j] = newScores[j];
+            }
+            printf("ì ìˆ˜ê°€ ìˆ˜ì •ë˜ì—ˆìŠµë‹ˆë‹¤.\n");
+            return;
+        }
+    }
+    printf("í•´ë‹¹ IDë¥¼ ê°€ì§„ í›„ë³´ìê°€ ì—†ìŠµë‹ˆë‹¤.\n");
+}
+
+void calculateTotalScores() {
+    for (int i = 0; i < MAX_CANDIDATES; i++) {
+        candidates[i].totalScore = 0;
+        for (int j = 0; j < 5; j++) {
+            candidates[i].totalScore += candidates[i].scores[j]; // ì´ì  ê³„ì‚°
+        }
+    }
+}
+
+void selectFinalMembers() {
+    printf("\n=======================================\n");
+    printf("í›„ë³´ ì„ ë°œ ê²°ê³¼ ì§‘ê³„ ì¤‘ ...\n");
+    printf("=======================================\n");
+    printf("#######################################\n");
+    printf("# ë°€ë¦¬ì›¨ì´ì¦ˆì˜ ë©¤ë²„ê°€ ëœ ê±¸ì¶•í•˜í•©ë‹ˆë‹¤!  #\n");
+    printf("#######################################\n");
+
+    // ê°„ë‹¨í•œ ì •ë ¬ì„ í†µí•´ ì ìˆ˜ ìˆœìœ¼ë¡œ ì •ë ¬
+    for (int i = 0; i < MAX_CANDIDATES - 1; i++) {
+        for (int j = 0; j < MAX_CANDIDATES - i - 1; j++) {
+            if (candidates[j].totalScore < candidates[j + 1].totalScore) {
+                Candidate temp = candidates[j];
+                candidates[j] = candidates[j + 1];
+                candidates[j + 1] = temp;
+            }
+        }
+    }
+
+    for (int i = 0; i < 4; i++) { // ìƒìœ„ 4ëª… ì¶œë ¥
+        printf("%d. %s\n", i + 1, candidates[i].name);
     }
 }
 
 int main() {
-    Candidate candidates[MAX_CANDIDATES] = {
-        {"¹ÚÁö¿¬", 123456},
-        {"Ethan Smith", 234567},
-        {"Helena Silva", 345678},
-        {"Liam Wilson", 456789},
-        {"Emma Brown", 567890},
-        {"Oliver Jones", 678901}
-    };
+    char judgeName[MAX_NAME_LENGTH];
+    char specialization[MAX_NAME_LENGTH];
 
-    int scores[MAX_CANDIDATES][7] = {0}; // ÈÄº¸ÀÚ Á¡¼ö ÀúÀå ¹è¿­
-    int judge_index = 0;
+    printf("####################################\n");
+    printf("#       ì˜¤ë””ì…˜ ì‹¬ì‚¬ ê²°ê³¼ ì…ë ¥       #\n");
+    printf("####################################\n");
 
-    char judge_name[MAX_NAME_LENGTH];
-    char specialty[MAX_NAME_LENGTH];
+    // ì‹¬ì‚¬ì ì´ë¦„ê³¼ ì „ë¬¸ ë¶„ì•¼ ì…ë ¥
+    printf("> ì‹¬ì‚¬ì ì´ë¦„: ");
+    scanf("%s", judgeName);
+    printf("> ì „ë¬¸ ë¶„ì•¼: ");
+    scanf("%s", specialization);
 
-    printf("½É»çÀÚ ÀÌ¸§: ");
-    scanf("%s", judge_name);
-    printf("Àü¹® ºĞ¾ß: ");
-    scanf("%s", specialty);
+    // ì ìˆ˜ ì…ë ¥
+    inputScores(judgeName, specialization);
 
-    input_scores(candidates, scores, judge_index);
-    calculate_totals(scores);
-    display_results(candidates, scores);
+    // ì´ì  ê³„ì‚°
+    calculateTotalScores();
 
-    // Á¦Ãâ ¿©ºÎ È®ÀÎ
-    char submit;
-    printf("Á¦ÃâÇÏ½Ã°Ú½À´Ï±î? (Y/N): ");
-    scanf(" %c", &submit);
-    
-    if (submit == 'Y' || submit == 'y') {
-        printf("***ÃÖÁ¾ Á¦ÃâÀ» ¿Ï·áÇß½À´Ï´Ù.***\n");
-    } else {
-        // Á¡¼ö ¼öÁ¤ ±â´É
+    // ì ìˆ˜ ì¶œë ¥
+    printScores();
+
+    // ì œì¶œ í™•ì¸
+    char submission = confirmSubmission();
+    if (submission == 'Y' || submission == 'y') {
+        printf("***ìµœì¢… ì œì¶œì„ ì™„ë£Œí–ˆìŠµë‹ˆë‹¤.***\n");
+    } else if (submission == 'N' || submission == 'n') {
         while (1) {
-            int id_to_modify;
-            printf("¼öÁ¤ÇÒ ÈÄº¸ÀÚÀÇ °íÀ¯ ID ÀÔ·Â (Á¾·áÇÏ·Á¸é -1 ÀÔ·Â): ");
-            scanf("%d", &id_to_modify);
-            if (id_to_modify == -1) break;
-
-            for (int i = 0; i < MAX_CANDIDATES; i++) {
-                if (candidates[i].id == id_to_modify) {
-                    int new_score;
-                    printf("%sÀÇ »õ À½¾Ç ¼Ò¾ç Á¡¼ö (10~100): ", candidates[i].name);
-                    scanf("%d", &new_score);
-                    if (new_score >= 10 && new_score <= 100) {
-                        scores[i][0] = new_score; // À½¾Ç ¼Ò¾ç Á¡¼ö ¼öÁ¤
-                        scores[i][6] = 0; // ÃÑÁ¡ ÃÊ±âÈ­
-                        calculate_totals(scores); // ÃÑÁ¡ Àç°è»ê
-                    } else {
-                        printf("Àß¸øµÈ Á¡¼öÀÔ´Ï´Ù.\n");
-                    }
-                    break;
-                }
+            modifyScore();
+            printf("ìˆ˜ì •ì„ ê³„ì†í•˜ì‹œê² ìŠµë‹ˆê¹Œ? (Y/N): ");
+            char continueModifying;
+            scanf(" %c", &continueModifying);
+            if (continueModifying == 'N' || continueModifying == 'n') {
+                break;
             }
         }
     }
 
-    // ÃÖÁ¾ ÈÄº¸ ¼±¹ß
-    printf("=======================================\n");
-    printf("ÈÄº¸ ¼±¹ß °á°ú Áı°è Áß ...\n");
-    printf("=======================================\n");
-    printf("#######################################\n");
-    printf("# ¹Ğ¸®¿şÀÌÁîÀÇ ¸â¹ö°¡ µÈ °ÉÃàÇÏÇÕ´Ï´Ù!  #\n");
-    printf("#######################################\n");
-
-    // Á¡¼ö¿¡ µû¶ó ÈÄº¸ÀÚ Á¤·Ä (ÃÑÁ¡ ±âÁØ)
-    for (int i = 0; i < MAX_CANDIDATES; i++) {
-        for (int j = i + 1; j < MAX_CANDIDATES; j++) {
-            if (scores[i][6] < scores[j][6]) {
-                // Á¡¼ö ±³È¯
-                int temp_score[7];
-                for (int k = 0; k < 7; k++) {
-                    temp_score[k] = scores[i][k];
-                    scores[i][k] = scores[j][k];
-                    scores[j][k] = temp_score[k];
-                }
-
-                // ÈÄº¸ÀÚ ÀÌ¸§ ±³È¯
-                Candidate temp_candidate = candidates[i];
-                candidates[i] = candidates[j];
-                candidates[j] = temp_candidate;
-            }
-        }
-    }
-
-    for (int i = 0; i < 4; i++) {
-        printf("%d. %s\n", i + 1, candidates[i].name);
-    }
+    // ìµœì¢… ë©¤ë²„ ì„ ë°œ
+    selectFinalMembers();
 
     return 0;
 }
