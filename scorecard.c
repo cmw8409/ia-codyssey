@@ -28,7 +28,7 @@ void inputScores(const char *judgeName, const char *specialization) {
             do {
                 switch (j) {
                     case 0:
-                        printf("%s 소양 점수 (10~100): ", specialization); // 음악 소양 점수
+                        printf("음악 소양 점수 (10~100): ", specialization); // 음악 소양 점수
                         break;
                     case 1:
                         printf("댄스 점수 (10~100): ");
